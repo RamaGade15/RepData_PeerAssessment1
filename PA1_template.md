@@ -1,26 +1,65 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
 
-```{r, echo=TRUE}
+
+```r
 setwd("C:/DataScience/WorkDir/ReproducibleResearch")
 require(data.table)
+```
+
+```
+## Loading required package: data.table
+```
+
+```r
 require(dplyr)
+```
+
+```
+## Loading required package: dplyr
+## 
+## Attaching package: 'dplyr'
+## 
+## The following objects are masked from 'package:data.table':
+## 
+##     between, last
+## 
+## The following object is masked from 'package:stats':
+## 
+##     filter
+## 
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
 require(ggplot2)
+```
+
+```
+## Loading required package: ggplot2
+```
+
+```r
 require(stringr)
+```
+
+```
+## Loading required package: stringr
+```
+
+```r
 df_stepsData <- read.csv("./data/activity.csv")
 ```
 
 
 ## What is mean total number of steps taken per day?
 
-```{r, echo=TRUE}
+
+```r
 df_stepsPerDay <-  df_stepsData %>% group_by(date) %>%
   summarise(stepsPerDay = sum(steps,na.rm = TRUE))                 
 stepsSummary <- summarise(df_stepsPerDay, stepsMean = mean(stepsPerDay,na.rm=TRUE), 
@@ -36,16 +75,19 @@ ggplot(df_stepsPerDay, aes(x = factor(date), y = stepsPerDay)) +
       theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
       scale_x_discrete(breaks=xlabels, labels=xlabels)
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
 # 
 
 * Summary of total number of steps taken per day -
- Mean:   `r as.integer(stepsSummary$stepsMean)`
- Median: `r as.integer(stepsSummary$stepsMedian)`
+ Mean:   9354
+ Median: 10395
  
  
 ## What is the average daily activity pattern?
 
-```{r, echo=TRUE}
+
+```r
 df_dailyPattern <-  df_stepsData %>% group_by(interval) %>%
   summarise(avgStepsPerInterval = mean(steps,na.rm = TRUE)) 
 #
@@ -74,19 +116,23 @@ ggplot(df_dailyPattern, aes(x = time_char, y = avgStepsPerInterval, group=1)) +
   scale_x_discrete(breaks=xlabels, labels=xlabels)  
 ```
 
-* on average across all the days in the dataset, `r maxint` interval contains the maximum number of steps  
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+
+* on average across all the days in the dataset, 08:35 interval contains the maximum number of steps  
 
 ## Imputing missing values
 
-```{r, echo=TRUE}
+
+```r
 ## Calculate and report the total number of missing values in the dataset 
 ## (i.e. the total number of rows with NAs)
 stepsNA <- filter(df_stepsData,is.na(steps))
 ```
 
-* Total number of missing values is `r length(stepsNA$steps)`
+* Total number of missing values is 2304
 
-```{r, echo=TRUE}
+
+```r
 #
 # Convert daily averages to data.table
 #
@@ -130,23 +176,29 @@ ggplot(df_stepsPerDayA, aes(x = factor(date), y = stepsPerDay)) +
   labs(title = "Steps per Day", x = "Date", y = "Steps") +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
   scale_x_discrete(breaks=xlabels, labels=xlabels)
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
+
+```r
 #
 ```
 #
 
 * Summary of total number of steps taken per day -
- Mean:   `r stepsMeanI`
- Median: `r stepsMedianI`
+ Mean:   10766
+ Median: 10766
 
 * Before replacing NAs, these values were -
- Mean:   `r as.integer(stepsSummary$stepsMean)`
- Median: `r as.integer(stepsSummary$stepsMedian)`
+ Mean:   9354
+ Median: 10395
 
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r, echo=TRUE}
+
+```r
 df_stepsDataA$day   <- weekdays(as.Date(df_stepsDataA$date)) 
 df_stepsDataA$wkday <- ifelse((df_stepsDataA$day == "Saturday" |
                                  df_stepsDataA$day == "Sunday"),"weekend", "weekday")
@@ -171,3 +223,5 @@ ggplot(df_dailyPatternA, aes(x = time_char, y = avgStepsPerInterval, group=1)) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
   scale_x_discrete(breaks=xlabels, labels=xlabels)  
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
